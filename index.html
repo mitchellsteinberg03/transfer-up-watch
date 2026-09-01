@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Transfer-Up Board</title>
+<style>
+:root { --bg:#f6f7f9; --card:#fff; --ink:#12161c; --dim:#5d6673; --line:#e3e7ec;
+  --accent:#0b5cd5; --fcs:#7b3fb8; --w:#0a7f43; --l:#b02121; --soft:#f0f2f5; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#0e1116; --card:#161a21; --ink:#e8ecf1; --dim:#98a2b0; --line:#252b34;
+  --accent:#5b9bff; --fcs:#b98cf0; --w:#3fce87; --l:#ff7b7b; --soft:#1c212a; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink);
+  font:15px/1.5 ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif; }
+.wrap { max-width:1000px; margin:0 auto; padding:28px 18px 64px; }
+h1 { margin:0 0 4px; font-size:27px; letter-spacing:-.02em; }
+header p { margin:0; color:var(--dim); }
+.bar { display:flex; flex-wrap:wrap; gap:14px; margin:18px 0; padding:12px 14px;
+  background:var(--card); border:1px solid var(--line); border-radius:10px;
+  font-size:13px; color:var(--dim); }
+.bar b { color:var(--ink); }
+section { margin:26px 0; }
+h2 { margin:0 0 12px; font-size:19px; letter-spacing:-.01em; }
+.grp { margin:22px 0 10px; font-size:12px; text-transform:uppercase;
+  letter-spacing:.08em; color:var(--dim); display:flex; align-items:center; gap:8px; }
+.grp .n { background:var(--soft); border-radius:20px; padding:1px 8px;
+  font-size:11px; letter-spacing:0; }
+.plist { display:grid; gap:10px; }
+.p { background:var(--card); border:1px solid var(--line); border-radius:11px;
+  padding:14px 16px; }
+.hd { display:flex; gap:12px; align-items:flex-start; }
+.rk { color:var(--dim); font-variant-numeric:tabular-nums; font-size:13px;
+  min-width:22px; padding-top:3px; }
+.hd h4 { margin:0; font-size:16px; }
+.pos { font-size:11px; color:var(--dim); border:1px solid var(--line);
+  border-radius:5px; padding:1px 5px; vertical-align:middle; margin-left:4px; }
+.sub { margin:1px 0 0; font-size:13px; color:var(--dim); }
+.meta { margin:1px 0 0; font-size:12px; color:var(--dim); }
+.sub .w { color:var(--w); } .sub .l { color:var(--l); }
+.gr { margin-left:auto; text-align:right; }
+.g { display:block; font-size:21px; font-weight:700;
+  font-variant-numeric:tabular-nums; }
+.gl { font-size:10px; letter-spacing:.09em; color:var(--dim); }
+.did { margin:10px 0 8px; font-size:14.5px; }
+.chips { margin-bottom:10px; }
+.chip { display:inline-block; font-size:11px; padding:2px 7px; margin:0 4px 4px 0;
+  border:1px solid var(--line); border-radius:5px; color:var(--dim); }
+.chip.core { border-color:var(--accent); color:var(--accent); }
+.chip.fcs { border-color:var(--fcs); color:var(--fcs); }
+.chip.warn { border-color:var(--l); color:var(--l); }
+.chip.good { border-color:var(--w); color:var(--w); }
+.chip.pend { border-color:#c98a1a; color:#c98a1a; }
+.bar .ok { color:var(--w); }
+.legend { background:var(--card); border:1px solid var(--line); border-radius:10px;
+  padding:12px 14px; margin-bottom:18px; }
+.legend summary { cursor:pointer; font-size:13px; color:var(--accent); }
+.legend dl { margin:12px 0 0; font-size:13.5px; }
+.legend dt { font-weight:600; margin-top:10px; }
+.legend dd { margin:2px 0 0; color:var(--dim); }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr));
+  background:var(--card); border:1px solid var(--line);
+  border-radius:8px; overflow:hidden; }
+.cell { padding:6px 8px; border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line); }
+.lab { display:block; font-size:10px; text-transform:uppercase;
+  letter-spacing:.05em; color:var(--dim); }
+.val { font-size:15px; font-variant-numeric:tabular-nums; }
+.pg { font-size:11px; color:var(--dim); margin-left:5px; }
+.season { margin-top:10px; }
+.season summary { cursor:pointer; font-size:13px; color:var(--accent);
+  padding:6px 0; }
+.season .grid { margin-top:8px; }
+.swing { margin:6px 0; font-size:13px; color:var(--dim); }
+.empty { padding:14px; border:1px dashed var(--line); border-radius:8px;
+  color:var(--dim); font-size:14px; }
+.note { margin:0 0 12px; font-size:13px; color:var(--dim); }
+.cols { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:16px; }
+.col { background:var(--card); border:1px solid var(--line); border-radius:11px;
+  padding:14px; }
+.col h3 { margin:0 0 8px; font-size:12px; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--dim); }
+table { width:100%; border-collapse:collapse; }
+td { padding:6px 4px; border-bottom:1px solid var(--line); font-size:14px; }
+.school { display:block; font-size:12px; color:var(--dim); }
+.num { text-align:right; font-variant-numeric:tabular-nums; }
+footer { color:var(--dim); font-size:12.5px; line-height:1.7; margin-top:30px; }
+@media print { .season { } .p { break-inside:avoid; } }
+</style></head><body>
+<div class="wrap">
+<header><h1>Transfer-Up Board</h1>
+<p>2026 &middot; Week 0 &mdash; the best G5 and FCS players with eligibility
+remaining, grouped by position.</p></header>
+<div class="bar"><span><b>40</b> players</span>
+<span><b>9</b> schools</span>
+<span class="ok">Every player has eligibility remaining</span></div>
+
+<details class="legend"><summary>What the labels mean</summary>
+<dl>
+<dt>QB · WR · ED · OT · CB · RB · DI · LB · S · TE · iOL</dt>
+<dd>His position. Groups are printed in transfer-portal value order &mdash; the positions
+that command the most in a portal move come first.</dd>
+<dt>Freshman / Sophomore / Junior</dt>
+<dd>Class year, from the school's official roster. <b>No seniors appear on this board</b>
+&mdash; a player with no eligibility left cannot transfer, so he is not a candidate.</dd>
+<dt><span class="chip warn">eligibility unconfirmed</span></dt>
+<dd>His name did not match his school's published roster, so his class could not be
+verified. He is shown rather than dropped, because a spelling mismatch should not delete a
+real prospect &mdash; but <b>check his eligibility yourself before acting on him.</b></dd>
+<dt><span class="chip pend">eligibility &mdash; awaiting ruling</span></dt>
+<dd>We have researched him and gathered the evidence, but nobody has ruled yet.
+Treat him as unverified until someone does.</dd>
+<dt><span class="chip good">eligibility verified</span></dt>
+<dd>A person &mdash; you or Mason &mdash; confirmed he has eligibility remaining. That
+ruling sticks to him on every future board and is never re-asked. No automated source
+can produce this badge.</dd>
+<dt><span class="chip fcs">FCS</span></dt>
+<dd>He plays at the FCS level and appears here because his team played an FBS opponent.
+Those are the only FCS games PFF charts, and they are the most predictive transfer-up
+games there are.</dd>
+<dt>PFF</dt>
+<dd>His PFF grade for this game, on their 0&ndash;100 scale. Roughly: 90+ elite, 80+ very
+good, 70+ solid, 60s average.</dd>
+</dl></details>
+<section><h2>Offense — 20</h2><h3 class="grp">Quarterback<span class="n">3</span></h3><div class="plist"><article class="p">
+<div class="hd"><span class="rk">1</span>
+<div><h4>Trey Hedden <span class="pos">QB</span></h4>
+<p class="sub">New Mex St &nbsp;·&nbsp; at Florida State <b class="l">L 17-34</b></p>
+<p class="meta">6&#x27; 3&quot; · 225 lb · Tampa, FL</p></div>
+<div class="gr"><span class="g">72.7</span><span class="gl">PFF</span></div></div>
+<p class="did">26 of 43 for 272 yards, 2 touchdowns, 1 interception</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Cmp</span><span class="val">26</span></div><div class="cell"><span class="lab">Att</span><span class="val">43</span></div><div class="cell"><span class="lab">Yds</span><span class="val">272</span></div><div class="cell"><span class="lab">TD</span><span class="val">2</span></div><div class="cell"><span class="lab">INT</span><span class="val">1</span></div><div class="cell"><span class="lab">Big-time throws</span><span class="val">0</span></div><div class="cell"><span class="lab">Turnover-worthy</span><span class="val">2</span></div><div class="cell"><span class="lab">Dropbacks</span><span class="val">46</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>72.7</b> · 46 snaps</summary><p class="swing">Best: <b>72.7</b> (Wk 0 at Florida State)</p><div class="grid"><div class="cell"><span class="lab">Cmp</span><span class="val">26</span></div><div class="cell"><span class="lab">Att</span><span class="val">43</span></div><div class="cell"><span class="lab">Yds</span><span class="val">272</span></div><div class="cell"><span class="lab">TD</span><span class="val">2</span></div><div class="cell"><span class="lab">INT</span><span class="val">1</span></div><div class="cell"><span class="lab">Big-time throws</span><span class="val">0</span></div><div class="cell"><span class="lab">Turnover-worthy</span><span class="val">2</span></div><div class="cell"><span class="lab">Dropbacks</span><span class="val">46</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">2</span>
+<div><h4>Carson Conklin <span class="pos">QB</span></h4>
+<p class="sub">Sacramento &nbsp;·&nbsp; at Eastern Michigan <b class="l">L 17-28</b></p>
+<p class="meta">6&#x27; 1&quot; · 190 lb · Yorba Linda, CA</p></div>
+<div class="gr"><span class="g">70.0</span><span class="gl">PFF</span></div></div>
+<p class="did">24 of 45 for 221 yards, 1 interception</p>
+<div class="chips"><span class="chip">Junior</span><span class="chip fcs">FCS</span></div>
+<div class="grid"><div class="cell"><span class="lab">Cmp</span><span class="val">24</span></div><div class="cell"><span class="lab">Att</span><span class="val">45</span></div><div class="cell"><span class="lab">Yds</span><span class="val">221</span></div><div class="cell"><span class="lab">TD</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">1</span></div><div class="cell"><span class="lab">Big-time throws</span><span class="val">3</span></div><div class="cell"><span class="lab">Turnover-worthy</span><span class="val">1</span></div><div class="cell"><span class="lab">Dropbacks</span><span class="val">47</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>70.0</b> · 47 snaps</summary><p class="swing">Best: <b>70.0</b> (Wk 0 at Eastern Michigan)</p><div class="grid"><div class="cell"><span class="lab">Cmp</span><span class="val">24</span></div><div class="cell"><span class="lab">Att</span><span class="val">45</span></div><div class="cell"><span class="lab">Yds</span><span class="val">221</span></div><div class="cell"><span class="lab">TD</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">1</span></div><div class="cell"><span class="lab">Big-time throws</span><span class="val">3</span></div><div class="cell"><span class="lab">Turnover-worthy</span><span class="val">1</span></div><div class="cell"><span class="lab">Dropbacks</span><span class="val">47</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">3</span>
+<div><h4>Marcus Stokes <span class="pos">QB</span></h4>
+<p class="sub">Memphis &nbsp;·&nbsp; at UNLV <b class="w">W 27-21</b></p>
+<p class="meta">6&#x27; 2&quot; · 209 lb · Saint Augustine, FL</p></div>
+<div class="gr"><span class="g">62.4</span><span class="gl">PFF</span></div></div>
+<p class="did">15 of 26 for 223 yards, 2 touchdowns, no interceptions</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Cmp</span><span class="val">15</span></div><div class="cell"><span class="lab">Att</span><span class="val">26</span></div><div class="cell"><span class="lab">Yds</span><span class="val">223</span></div><div class="cell"><span class="lab">TD</span><span class="val">2</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Big-time throws</span><span class="val">1</span></div><div class="cell"><span class="lab">Turnover-worthy</span><span class="val">1</span></div><div class="cell"><span class="lab">Dropbacks</span><span class="val">29</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>62.4</b> · 29 snaps</summary><p class="swing">Best: <b>62.4</b> (Wk 0 at UNLV)</p><div class="grid"><div class="cell"><span class="lab">Cmp</span><span class="val">15</span></div><div class="cell"><span class="lab">Att</span><span class="val">26</span></div><div class="cell"><span class="lab">Yds</span><span class="val">223</span></div><div class="cell"><span class="lab">TD</span><span class="val">2</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Big-time throws</span><span class="val">1</span></div><div class="cell"><span class="lab">Turnover-worthy</span><span class="val">1</span></div><div class="cell"><span class="lab">Dropbacks</span><span class="val">29</span></div></div></details></article></div><h3 class="grp">Wide receiver<span class="n">5</span></h3><div class="plist"><article class="p">
+<div class="hd"><span class="rk">4</span>
+<div><h4>Carson Clark <span class="pos">WR</span></h4>
+<p class="sub">S Jose St &nbsp;·&nbsp; at USC <b class="l">L 26-42</b></p>
+<p class="meta">5&#x27; 9&quot; · 170 lb · Los Angeles, CA</p></div>
+<div class="gr"><span class="g">83.6</span><span class="gl">PFF</span></div></div>
+<p class="did">6 catches for 74 yards — 3.22 yards per route, 1 contested</p>
+<div class="chips"><span class="chip">Freshman</span></div>
+<div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">6</span></div><div class="cell"><span class="lab">Targets</span><span class="val">6</span></div><div class="cell"><span class="lab">Yds</span><span class="val">74</span></div><div class="cell"><span class="lab">TD</span><span class="val">0</span></div><div class="cell"><span class="lab">YAC</span><span class="val">5</span></div><div class="cell"><span class="lab">Contested</span><span class="val">1</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">3</span></div><div class="cell"><span class="lab">Routes</span><span class="val">23</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>83.6</b> · 23 snaps</summary><p class="swing">Best: <b>83.6</b> (Wk 0 at USC)</p><div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">6</span></div><div class="cell"><span class="lab">Targets</span><span class="val">6</span></div><div class="cell"><span class="lab">Yds</span><span class="val">74</span></div><div class="cell"><span class="lab">TD</span><span class="val">0</span></div><div class="cell"><span class="lab">YAC</span><span class="val">5</span></div><div class="cell"><span class="lab">Contested</span><span class="val">1</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">3</span></div><div class="cell"><span class="lab">Routes</span><span class="val">23</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">5</span>
+<div><h4>Tama Uiliata <span class="pos">WR</span></h4>
+<p class="sub">Hawaii &nbsp;·&nbsp; at Stanford <b class="l">L 27-37</b></p>
+<p class="meta">5&#x27; 11&quot; · 195 lb · Waipahu, HI</p></div>
+<div class="gr"><span class="g">80.1</span><span class="gl">PFF</span></div></div>
+<p class="did">8 catches for 62 yards and 1 score — 2.70 yards per route, 1 contested</p>
+<div class="chips"><span class="chip">Sophomore</span></div>
+<div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">8</span></div><div class="cell"><span class="lab">Targets</span><span class="val">10</span></div><div class="cell"><span class="lab">Yds</span><span class="val">62</span></div><div class="cell"><span class="lab">TD</span><span class="val">1</span></div><div class="cell"><span class="lab">YAC</span><span class="val">11</span></div><div class="cell"><span class="lab">Contested</span><span class="val">1</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">4</span></div><div class="cell"><span class="lab">Routes</span><span class="val">23</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>80.1</b> · 23 snaps</summary><p class="swing">Best: <b>80.1</b> (Wk 0 at Stanford)</p><div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">8</span></div><div class="cell"><span class="lab">Targets</span><span class="val">10</span></div><div class="cell"><span class="lab">Yds</span><span class="val">62</span></div><div class="cell"><span class="lab">TD</span><span class="val">1</span></div><div class="cell"><span class="lab">YAC</span><span class="val">11</span></div><div class="cell"><span class="lab">Contested</span><span class="val">1</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">4</span></div><div class="cell"><span class="lab">Routes</span><span class="val">23</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">6</span>
+<div><h4>Brodie Malone-Bradford <span class="pos">WR</span></h4>
+<p class="sub">New Mex St &nbsp;·&nbsp; at Florida State <b class="l">L 17-34</b></p>
+<p class="meta">6&#x27; 5&quot; · 205 lb · Houston, TX</p></div>
+<div class="gr"><span class="g">76.5</span><span class="gl">PFF</span></div></div>
+<p class="did">6 catches for 96 yards and 1 score — 3.20 yards per route</p>
+<div class="chips"><span class="chip">Sophomore</span></div>
+<div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">6</span></div><div class="cell"><span class="lab">Targets</span><span class="val">8</span></div><div class="cell"><span class="lab">Yds</span><span class="val">96</span></div><div class="cell"><span class="lab">TD</span><span class="val">1</span></div><div class="cell"><span class="lab">YAC</span><span class="val">21</span></div><div class="cell"><span class="lab">Contested</span><span class="val">0</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">4</span></div><div class="cell"><span class="lab">Routes</span><span class="val">30</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>76.5</b> · 30 snaps</summary><p class="swing">Best: <b>76.5</b> (Wk 0 at Florida State)</p><div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">6</span></div><div class="cell"><span class="lab">Targets</span><span class="val">8</span></div><div class="cell"><span class="lab">Yds</span><span class="val">96</span></div><div class="cell"><span class="lab">TD</span><span class="val">1</span></div><div class="cell"><span class="lab">YAC</span><span class="val">21</span></div><div class="cell"><span class="lab">Contested</span><span class="val">0</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">4</span></div><div class="cell"><span class="lab">Routes</span><span class="val">30</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">7</span>
+<div><h4>Jemyri Davis <span class="pos">WR</span></h4>
+<p class="sub">Memphis &nbsp;·&nbsp; at UNLV <b class="w">W 27-21</b></p>
+<p class="meta">5&#x27; 11&quot; · 170 lb · Fort Worth, TX</p></div>
+<div class="gr"><span class="g">80.0</span><span class="gl">PFF</span></div></div>
+<p class="did">3 catches for 62 yards — 4.43 yards per route</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">3</span></div><div class="cell"><span class="lab">Targets</span><span class="val">3</span></div><div class="cell"><span class="lab">Yds</span><span class="val">62</span></div><div class="cell"><span class="lab">TD</span><span class="val">0</span></div><div class="cell"><span class="lab">YAC</span><span class="val">33</span></div><div class="cell"><span class="lab">Contested</span><span class="val">0</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">2</span></div><div class="cell"><span class="lab">Routes</span><span class="val">14</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>80.0</b> · 14 snaps</summary><p class="swing">Best: <b>80.0</b> (Wk 0 at UNLV)</p><div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">3</span></div><div class="cell"><span class="lab">Targets</span><span class="val">3</span></div><div class="cell"><span class="lab">Yds</span><span class="val">62</span></div><div class="cell"><span class="lab">TD</span><span class="val">0</span></div><div class="cell"><span class="lab">YAC</span><span class="val">33</span></div><div class="cell"><span class="lab">Contested</span><span class="val">0</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">2</span></div><div class="cell"><span class="lab">Routes</span><span class="val">14</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">8</span>
+<div><h4>Kainoa Carvalho <span class="pos">WR</span></h4>
+<p class="sub">Hawaii &nbsp;·&nbsp; at Stanford <b class="l">L 27-37</b></p>
+<p class="meta">5&#x27; 6&quot; · 165 lb · Laie, HI</p></div>
+<div class="gr"><span class="g">77.0</span><span class="gl">PFF</span></div></div>
+<p class="did">5 catches for 72 yards — 4.00 yards per route</p>
+<div class="chips"><span class="chip">Freshman</span></div>
+<div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">5</span></div><div class="cell"><span class="lab">Targets</span><span class="val">5</span></div><div class="cell"><span class="lab">Yds</span><span class="val">72</span></div><div class="cell"><span class="lab">TD</span><span class="val">0</span></div><div class="cell"><span class="lab">YAC</span><span class="val">46</span></div><div class="cell"><span class="lab">Contested</span><span class="val">0</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">4</span></div><div class="cell"><span class="lab">Routes</span><span class="val">18</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>77.0</b> · 18 snaps</summary><p class="swing">Best: <b>77.0</b> (Wk 0 at Stanford)</p><div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">5</span></div><div class="cell"><span class="lab">Targets</span><span class="val">5</span></div><div class="cell"><span class="lab">Yds</span><span class="val">72</span></div><div class="cell"><span class="lab">TD</span><span class="val">0</span></div><div class="cell"><span class="lab">YAC</span><span class="val">46</span></div><div class="cell"><span class="lab">Contested</span><span class="val">0</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">4</span></div><div class="cell"><span class="lab">Routes</span><span class="val">18</span></div></div></details></article></div><h3 class="grp">Offensive tackle<span class="n">4</span></h3><div class="plist"><article class="p">
+<div class="hd"><span class="rk">9</span>
+<div><h4>Guzzy Kayed <span class="pos">T</span></h4>
+<p class="sub">E Michigan &nbsp;·&nbsp; vs Sacramento State <b class="w">W 28-17</b></p>
+<p class="meta">6&#x27; 3&quot; · 316 lb · Novi, MI</p></div>
+<div class="gr"><span class="g">75.7</span><span class="gl">PFF</span></div></div>
+<p class="did">71 snaps without allowing a pressure</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">71</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>75.7</b> · 71 snaps</summary><p class="swing">Best: <b>75.7</b> (Wk 0 vs Sacramento State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">71</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">10</span>
+<div><h4>Cam Stancil <span class="pos">T</span></h4>
+<p class="sub">Jville St &nbsp;·&nbsp; at North Dakota State <b class="l">L 7-33</b></p>
+<p class="meta">6&#x27; 4&quot; · 300 lb · Madison, MS</p></div>
+<div class="gr"><span class="g">62.3</span><span class="gl">PFF</span></div></div>
+<p class="did">54 snaps without allowing a pressure</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">54</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>62.3</b> · 54 snaps</summary><p class="swing">Best: <b>62.3</b> (Wk 0 at North Dakota State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">54</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">11</span>
+<div><h4>Armond Owens <span class="pos">T</span></h4>
+<p class="sub">New Mex St &nbsp;·&nbsp; at Florida State <b class="l">L 17-34</b></p>
+<p class="meta">6&#x27; 5&quot; · 310 lb · Missouri City, TX</p></div>
+<div class="gr"><span class="g">62.9</span><span class="gl">PFF</span></div></div>
+<p class="did">39 snaps without allowing a pressure</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">39</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>62.9</b> · 39 snaps</summary><p class="swing">Best: <b>62.9</b> (Wk 0 at Florida State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">39</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">12</span>
+<div><h4>Riley McGehee <span class="pos">T</span></h4>
+<p class="sub">Memphis &nbsp;·&nbsp; at UNLV <b class="w">W 27-21</b></p>
+<p class="meta">6&#x27; 5&quot; · 295 lb · New Hope, AL</p></div>
+<div class="gr"><span class="g">58.0</span><span class="gl">PFF</span></div></div>
+<p class="did">49 snaps without allowing a pressure</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">49</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>58.0</b> · 49 snaps</summary><p class="swing">Best: <b>58.0</b> (Wk 0 at UNLV)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">49</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div></details></article></div><h3 class="grp">Running back<span class="n">2</span></h3><div class="plist"><article class="p">
+<div class="hd"><span class="rk">13</span>
+<div><h4>Myles Mitchell <span class="pos">HB</span></h4>
+<p class="sub">N Dak St &nbsp;·&nbsp; vs Jacksonville State <b class="w">W 33-7</b></p>
+<p class="meta">5&#x27; 9&quot; · 205 lb · Chicago, IL</p></div>
+<div class="gr"><span class="g">84.6</span><span class="gl">PFF</span></div></div>
+<p class="did">11 carries for 74 yards — 57 after contact, 4 missed tackles forced</p>
+<div class="chips"><span class="chip">Freshman</span><span class="chip fcs">FCS</span></div>
+<div class="grid"><div class="cell"><span class="lab">Att</span><span class="val">11</span></div><div class="cell"><span class="lab">Yds</span><span class="val">74</span></div><div class="cell"><span class="lab">TD</span><span class="val">0</span></div><div class="cell"><span class="lab">Yds after contact</span><span class="val">57</span></div><div class="cell"><span class="lab">Missed tkl forced</span><span class="val">4</span></div><div class="cell"><span class="lab">Breakaway yds</span><span class="val">27</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">2</span></div><div class="cell"><span class="lab">Fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>84.6</b> · 11 snaps</summary><p class="swing">Best: <b>84.6</b> (Wk 0 vs Jacksonville State)</p><div class="grid"><div class="cell"><span class="lab">Att</span><span class="val">11</span></div><div class="cell"><span class="lab">Yds</span><span class="val">74</span></div><div class="cell"><span class="lab">TD</span><span class="val">0</span></div><div class="cell"><span class="lab">Yds after contact</span><span class="val">57</span></div><div class="cell"><span class="lab">Missed tkl forced</span><span class="val">4</span></div><div class="cell"><span class="lab">Breakaway yds</span><span class="val">27</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">2</span></div><div class="cell"><span class="lab">Fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">14</span>
+<div><h4>Jaylin Carter <span class="pos">HB</span></h4>
+<p class="sub">Memphis &nbsp;·&nbsp; at UNLV <b class="w">W 27-21</b></p>
+<p class="meta">5&#x27; 11&quot; · 190 lb · Valdosta, GA</p></div>
+<div class="gr"><span class="g">67.6</span><span class="gl">PFF</span></div></div>
+<p class="did">15 carries for 97 yards and 1 score — 66 after contact, 3 missed tackles forced</p>
+<div class="chips"><span class="chip">Sophomore</span></div>
+<div class="grid"><div class="cell"><span class="lab">Att</span><span class="val">15</span></div><div class="cell"><span class="lab">Yds</span><span class="val">97</span></div><div class="cell"><span class="lab">TD</span><span class="val">1</span></div><div class="cell"><span class="lab">Yds after contact</span><span class="val">66</span></div><div class="cell"><span class="lab">Missed tkl forced</span><span class="val">3</span></div><div class="cell"><span class="lab">Breakaway yds</span><span class="val">51</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">3</span></div><div class="cell"><span class="lab">Fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>67.6</b> · 15 snaps</summary><p class="swing">Best: <b>67.6</b> (Wk 0 at UNLV)</p><div class="grid"><div class="cell"><span class="lab">Att</span><span class="val">15</span></div><div class="cell"><span class="lab">Yds</span><span class="val">97</span></div><div class="cell"><span class="lab">TD</span><span class="val">1</span></div><div class="cell"><span class="lab">Yds after contact</span><span class="val">66</span></div><div class="cell"><span class="lab">Missed tkl forced</span><span class="val">3</span></div><div class="cell"><span class="lab">Breakaway yds</span><span class="val">51</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">3</span></div><div class="cell"><span class="lab">Fumbles</span><span class="val">0</span></div></div></details></article></div><h3 class="grp">Tight end<span class="n">2</span></h3><div class="plist"><article class="p">
+<div class="hd"><span class="rk">15</span>
+<div><h4>Reis Kessel <span class="pos">TE</span></h4>
+<p class="sub">N Dak St &nbsp;·&nbsp; vs Jacksonville State <b class="w">W 33-7</b></p>
+<p class="meta">6&#x27; 5&quot; · 245 lb · Fargo, ND</p></div>
+<div class="gr"><span class="g">66.3</span><span class="gl">PFF</span></div></div>
+<p class="did">4 catches for 30 yards and 1 score — 1.50 yards per route, 1 contested</p>
+<div class="chips"><span class="chip">Sophomore</span><span class="chip fcs">FCS</span></div>
+<div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">4</span></div><div class="cell"><span class="lab">Targets</span><span class="val">5</span></div><div class="cell"><span class="lab">Yds</span><span class="val">30</span></div><div class="cell"><span class="lab">TD</span><span class="val">1</span></div><div class="cell"><span class="lab">YAC</span><span class="val">3</span></div><div class="cell"><span class="lab">Contested</span><span class="val">1</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">3</span></div><div class="cell"><span class="lab">Routes</span><span class="val">20</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>66.3</b> · 20 snaps</summary><p class="swing">Best: <b>66.3</b> (Wk 0 vs Jacksonville State)</p><div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">4</span></div><div class="cell"><span class="lab">Targets</span><span class="val">5</span></div><div class="cell"><span class="lab">Yds</span><span class="val">30</span></div><div class="cell"><span class="lab">TD</span><span class="val">1</span></div><div class="cell"><span class="lab">YAC</span><span class="val">3</span></div><div class="cell"><span class="lab">Contested</span><span class="val">1</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">3</span></div><div class="cell"><span class="lab">Routes</span><span class="val">20</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">16</span>
+<div><h4>Joshua Long <span class="pos">TE</span></h4>
+<p class="sub">E Michigan &nbsp;·&nbsp; vs Sacramento State <b class="w">W 28-17</b></p>
+<p class="meta">6&#x27; 5&quot; · 242 lb · Los Angeles, CA</p></div>
+<div class="gr"><span class="g">60.9</span><span class="gl">PFF</span></div></div>
+<p class="did">6 catches for 44 yards — 1.16 yards per route</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">6</span></div><div class="cell"><span class="lab">Targets</span><span class="val">6</span></div><div class="cell"><span class="lab">Yds</span><span class="val">44</span></div><div class="cell"><span class="lab">TD</span><span class="val">0</span></div><div class="cell"><span class="lab">YAC</span><span class="val">28</span></div><div class="cell"><span class="lab">Contested</span><span class="val">0</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">3</span></div><div class="cell"><span class="lab">Routes</span><span class="val">38</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>60.9</b> · 38 snaps</summary><p class="swing">Best: <b>60.9</b> (Wk 0 vs Sacramento State)</p><div class="grid"><div class="cell"><span class="lab">Rec</span><span class="val">6</span></div><div class="cell"><span class="lab">Targets</span><span class="val">6</span></div><div class="cell"><span class="lab">Yds</span><span class="val">44</span></div><div class="cell"><span class="lab">TD</span><span class="val">0</span></div><div class="cell"><span class="lab">YAC</span><span class="val">28</span></div><div class="cell"><span class="lab">Contested</span><span class="val">0</span></div><div class="cell"><span class="lab">Drops</span><span class="val">0</span></div><div class="cell"><span class="lab">1st downs</span><span class="val">3</span></div><div class="cell"><span class="lab">Routes</span><span class="val">38</span></div></div></details></article></div><h3 class="grp">Interior offensive line<span class="n">4</span></h3><div class="plist"><article class="p">
+<div class="hd"><span class="rk">17</span>
+<div><h4>Griffin Empey <span class="pos">G</span></h4>
+<p class="sub">N Dak St &nbsp;·&nbsp; vs Jacksonville State <b class="w">W 33-7</b></p>
+<p class="meta">6&#x27; 3&quot; · 302 lb · Stoughton, WI</p></div>
+<div class="gr"><span class="g">82.4</span><span class="gl">PFF</span></div></div>
+<p class="did">71 snaps without allowing a pressure</p>
+<div class="chips"><span class="chip">Junior</span><span class="chip fcs">FCS</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">71</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>82.4</b> · 71 snaps</summary><p class="swing">Best: <b>82.4</b> (Wk 0 vs Jacksonville State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">71</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">18</span>
+<div><h4>Gage Schmidt <span class="pos">C</span></h4>
+<p class="sub">N Dak St &nbsp;·&nbsp; vs Jacksonville State <b class="w">W 33-7</b></p>
+<p class="meta">6&#x27; 3&quot; · 300 lb · North Mankato, MN</p></div>
+<div class="gr"><span class="g">74.9</span><span class="gl">PFF</span></div></div>
+<p class="did">73 snaps without allowing a pressure</p>
+<div class="chips"><span class="chip">Sophomore</span><span class="chip fcs">FCS</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">73</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>74.9</b> · 73 snaps</summary><p class="swing">Best: <b>74.9</b> (Wk 0 vs Jacksonville State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">73</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">19</span>
+<div><h4>Ryan Walker <span class="pos">G</span></h4>
+<p class="sub">Jville St &nbsp;·&nbsp; at North Dakota State <b class="l">L 7-33</b></p>
+<p class="meta">6&#x27; 3&quot; · 285 lb · Alabaster, AL</p></div>
+<div class="gr"><span class="g">64.0</span><span class="gl">PFF</span></div></div>
+<p class="did">51 snaps without allowing a pressure</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">51</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>64.0</b> · 51 snaps</summary><p class="swing">Best: <b>64.0</b> (Wk 0 at North Dakota State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">51</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">20</span>
+<div><h4>Hadine Diaby <span class="pos">G</span></h4>
+<p class="sub">Jville St &nbsp;·&nbsp; at North Dakota State <b class="l">L 7-33</b></p>
+<p class="meta">6&#x27; 3&quot; · 300 lb · Loganville, GA</p></div>
+<div class="gr"><span class="g">63.3</span><span class="gl">PFF</span></div></div>
+<p class="did">49 snaps, 2 pressures allowed</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">49</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">2</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">1</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>63.3</b> · 49 snaps</summary><p class="swing">Best: <b>63.3</b> (Wk 0 at North Dakota State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">49</span></div><div class="cell"><span class="lab">Pressures allowed</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hits allowed</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries allowed</span><span class="val">2</span></div><div class="cell"><span class="lab">Penalties</span><span class="val">1</span></div></div></details></article></div></section>
+<section><h2>Defense — 20</h2><h3 class="grp">Edge<span class="n">4</span></h3><div class="plist"><article class="p">
+<div class="hd"><span class="rk">1</span>
+<div><h4>Quincy Byas <span class="pos">ED</span></h4>
+<p class="sub">E Michigan &nbsp;·&nbsp; vs Sacramento State <b class="w">W 28-17</b></p>
+<p class="meta">6&#x27; 1&quot; · 230 lb · St. Louis, MO</p></div>
+<div class="gr"><span class="g">78.6</span><span class="gl">PFF</span></div></div>
+<p class="did">2 pressures, 1 sack, 1 stop on 45 snaps</p>
+<div class="chips"><span class="chip">Sophomore</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">45</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Stops</span><span class="val">1</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">1</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">1</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>78.6</b> · 45 snaps</summary><p class="swing">Best: <b>78.6</b> (Wk 0 vs Sacramento State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">45</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Stops</span><span class="val">1</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">1</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">1</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">2</span>
+<div><h4>Tae Floyd <span class="pos">ED</span></h4>
+<p class="sub">Jville St &nbsp;·&nbsp; at North Dakota State <b class="l">L 7-33</b></p>
+<p class="meta">6&#x27; 3&quot; · 250 lb · Ocala, FL</p></div>
+<div class="gr"><span class="g">75.3</span><span class="gl">PFF</span></div></div>
+<p class="did">3 pressures, 4 stops, 4 tackles on 35 snaps</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">35</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">4</span></div><div class="cell"><span class="lab">Stops</span><span class="val">4</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">3</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">3</span></div><div class="cell"><span class="lab">TFL</span><span class="val">2</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>75.3</b> · 35 snaps</summary><p class="swing">Best: <b>75.3</b> (Wk 0 at North Dakota State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">35</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">4</span></div><div class="cell"><span class="lab">Stops</span><span class="val">4</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">3</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">3</span></div><div class="cell"><span class="lab">TFL</span><span class="val">2</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">3</span>
+<div><h4>Marvell Eggleston <span class="pos">ED</span></h4>
+<p class="sub">E Michigan &nbsp;·&nbsp; vs Sacramento State <b class="w">W 28-17</b></p>
+<p class="meta">6&#x27; 5&quot; · 225 lb · Detroit, MI</p></div>
+<div class="gr"><span class="g">76.0</span><span class="gl">PFF</span></div></div>
+<p class="did">3 pressures on 23 snaps</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">23</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Stops</span><span class="val">0</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">3</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">2</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>76.0</b> · 23 snaps</summary><p class="swing">Best: <b>76.0</b> (Wk 0 vs Sacramento State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">23</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Stops</span><span class="val">0</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">3</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">2</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">4</span>
+<div><h4>Jacari Gatling <span class="pos">ED</span></h4>
+<p class="sub">Memphis &nbsp;·&nbsp; at UNLV <b class="w">W 27-21</b></p>
+<p class="meta">6&#x27; 4&quot; · 291 lb · Hyattsville, MD</p></div>
+<div class="gr"><span class="g">72.3</span><span class="gl">PFF</span></div></div>
+<p class="did">1 pressure, 1 sack on 21 snaps</p>
+<div class="chips"><span class="chip">Freshman</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">21</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Stops</span><span class="val">0</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">1</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">1</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>72.3</b> · 21 snaps</summary><p class="swing">Best: <b>72.3</b> (Wk 0 at UNLV)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">21</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Stops</span><span class="val">0</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">1</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">1</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article></div><h3 class="grp">Cornerback<span class="n">4</span></h3><div class="plist"><article class="p">
+<div class="hd"><span class="rk">5</span>
+<div><h4>JQ Brooks <span class="pos">CB</span></h4>
+<p class="sub">Jville St &nbsp;·&nbsp; at North Dakota State <b class="l">L 7-33</b></p>
+<p class="meta">6&#x27; 3&quot; · 180 lb · Bessemer, AL</p></div>
+<div class="gr"><span class="g">74.4</span><span class="gl">PFF</span></div></div>
+<p class="did">3 stops, 4 tackles, 1 pass break-up on 58 snaps</p>
+<div class="chips"><span class="chip">Freshman</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">58</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">4</span></div><div class="cell"><span class="lab">Stops</span><span class="val">3</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">1</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>74.4</b> · 58 snaps</summary><p class="swing">Best: <b>74.4</b> (Wk 0 at North Dakota State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">58</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">4</span></div><div class="cell"><span class="lab">Stops</span><span class="val">3</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">1</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">6</span>
+<div><h4>Jeremiah Hughes <span class="pos">CB</span></h4>
+<p class="sub">Hawaii &nbsp;·&nbsp; at Stanford <b class="l">L 27-37</b></p>
+<p class="meta">6&#x27; 0&quot; · 180 lb · Las Vegas, NV</p></div>
+<div class="gr"><span class="g">69.6</span><span class="gl">PFF</span></div></div>
+<p class="did">1 pass break-up on 29 snaps</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">29</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Stops</span><span class="val">0</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">1</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>69.6</b> · 29 snaps</summary><p class="swing">Best: <b>69.6</b> (Wk 0 at Stanford)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">29</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Stops</span><span class="val">0</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">1</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">7</span>
+<div><h4>Isaiah Buxton <span class="pos">CB</span></h4>
+<p class="sub">S Jose St &nbsp;·&nbsp; at USC <b class="l">L 26-42</b></p>
+<p class="meta">6&#x27; 0&quot; · 170 lb · San Diego, CA</p></div>
+<div class="gr"><span class="g">66.5</span><span class="gl">PFF</span></div></div>
+<p class="did">3 stops, 7 tackles on 56 snaps</p>
+<div class="chips"><span class="chip">Sophomore</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">56</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">7</span></div><div class="cell"><span class="lab">Stops</span><span class="val">3</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">2</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>66.5</b> · 56 snaps</summary><p class="swing">Best: <b>66.5</b> (Wk 0 at USC)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">56</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">7</span></div><div class="cell"><span class="lab">Stops</span><span class="val">3</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">2</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">8</span>
+<div><h4>Jaylon Edmond <span class="pos">CB</span></h4>
+<p class="sub">Hawaii &nbsp;·&nbsp; at Stanford <b class="l">L 27-37</b></p>
+<p class="meta">5&#x27; 10&quot; · 170 lb · Long Beach, CA</p></div>
+<div class="gr"><span class="g">64.5</span><span class="gl">PFF</span></div></div>
+<p class="did">1 tackle, 1 pass break-up on 53 snaps</p>
+<div class="chips"><span class="chip">Sophomore</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">53</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Stops</span><span class="val">0</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">1</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>64.5</b> · 53 snaps</summary><p class="swing">Best: <b>64.5</b> (Wk 0 at Stanford)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">53</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Stops</span><span class="val">0</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">1</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article></div><h3 class="grp">Interior defensive line<span class="n">4</span></h3><div class="plist"><article class="p">
+<div class="hd"><span class="rk">9</span>
+<div><h4>Elijah Kinsler <span class="pos">DI</span></h4>
+<p class="sub">Memphis &nbsp;·&nbsp; at UNLV <b class="w">W 27-21</b></p>
+<p class="meta">6&#x27; 3&quot; · 256 lb · Oradell, NJ</p></div>
+<div class="gr"><span class="g">72.4</span><span class="gl">PFF</span></div></div>
+<p class="did">5 pressures, 4 sacks, 6 stops on 54 snaps</p>
+<div class="chips"><span class="chip">Sophomore</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">54</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">3</span></div><div class="cell"><span class="lab">Stops</span><span class="val">6</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">5</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">4</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>72.4</b> · 54 snaps</summary><p class="swing">Best: <b>72.4</b> (Wk 0 at UNLV)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">54</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">3</span></div><div class="cell"><span class="lab">Stops</span><span class="val">6</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">5</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">4</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">10</span>
+<div><h4>Austin Chambers <span class="pos">DI</span></h4>
+<p class="sub">Sacramento &nbsp;·&nbsp; at Eastern Michigan <b class="l">L 17-28</b></p>
+<p class="meta">6&#x27; 2&quot; · 270 lb · Madison, AL</p></div>
+<div class="gr"><span class="g">69.9</span><span class="gl">PFF</span></div></div>
+<p class="did">2 pressures on 36 snaps</p>
+<div class="chips"><span class="chip">Sophomore</span><span class="chip fcs">FCS</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">36</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Stops</span><span class="val">0</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">1</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>69.9</b> · 36 snaps</summary><p class="swing">Best: <b>69.9</b> (Wk 0 at Eastern Michigan)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">36</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Stops</span><span class="val">0</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">1</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">11</span>
+<div><h4>Ozzy Pollard <span class="pos">DI</span></h4>
+<p class="sub">Hawaii &nbsp;·&nbsp; at Stanford <b class="l">L 27-37</b></p>
+<p class="meta">6&#x27; 4&quot; · 300 lb · Carmel, IN</p></div>
+<div class="gr"><span class="g">67.4</span><span class="gl">PFF</span></div></div>
+<p class="did">2 pressures, 2 stops, 2 tackles on 39 snaps</p>
+<div class="chips"><span class="chip">Sophomore</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">39</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">2</span></div><div class="cell"><span class="lab">Stops</span><span class="val">2</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">2</span></div><div class="cell"><span class="lab">TFL</span><span class="val">1</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>67.4</b> · 39 snaps</summary><p class="swing">Best: <b>67.4</b> (Wk 0 at Stanford)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">39</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">2</span></div><div class="cell"><span class="lab">Stops</span><span class="val">2</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">2</span></div><div class="cell"><span class="lab">TFL</span><span class="val">1</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">12</span>
+<div><h4>Lucas Conti <span class="pos">DI</span></h4>
+<p class="sub">Unlv &nbsp;·&nbsp; vs Memphis <b class="l">L 21-27</b></p>
+<p class="meta">6&#x27; 5&quot; · 295 lb · Corona, CA</p></div>
+<div class="gr"><span class="g">64.9</span><span class="gl">PFF</span></div></div>
+<p class="did">1 pressure, 1 stop, 2 tackles on 52 snaps</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">52</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">2</span></div><div class="cell"><span class="lab">Stops</span><span class="val">1</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">1</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>64.9</b> · 52 snaps</summary><p class="swing">Best: <b>64.9</b> (Wk 0 vs Memphis)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">52</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">2</span></div><div class="cell"><span class="lab">Stops</span><span class="val">1</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">1</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article></div><h3 class="grp">Linebacker<span class="n">5</span></h3><div class="plist"><article class="p">
+<div class="hd"><span class="rk">13</span>
+<div><h4>Mac Sanders <span class="pos">LB</span></h4>
+<p class="sub">Jville St &nbsp;·&nbsp; at North Dakota State <b class="l">L 7-33</b></p>
+<p class="meta">6&#x27; 2&quot; · 225 lb · Mcdonough, GA</p></div>
+<div class="gr"><span class="g">79.8</span><span class="gl">PFF</span></div></div>
+<p class="did">1 pressure, 1 tackle, 1 pass break-up on 25 snaps</p>
+<div class="chips"><span class="chip">Sophomore</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">25</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Stops</span><span class="val">0</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">1</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">1</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">1</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>79.8</b> · 25 snaps</summary><p class="swing">Best: <b>79.8</b> (Wk 0 at North Dakota State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">25</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Stops</span><span class="val">0</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">1</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">1</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">1</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">14</span>
+<div><h4>Zach Ruffin <span class="pos">LB</span></h4>
+<p class="sub">Memphis &nbsp;·&nbsp; at UNLV <b class="w">W 27-21</b></p>
+<p class="meta">6&#x27; 4&quot; · 199 lb · Philadelphia, MS</p></div>
+<div class="gr"><span class="g">74.6</span><span class="gl">PFF</span></div></div>
+<p class="did">2 pressures, 1 sack, 9 stops on 71 snaps</p>
+<div class="chips"><span class="chip">Sophomore</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">71</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">10</span></div><div class="cell"><span class="lab">Stops</span><span class="val">9</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">1</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>74.6</b> · 71 snaps</summary><p class="swing">Best: <b>74.6</b> (Wk 0 at UNLV)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">71</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">10</span></div><div class="cell"><span class="lab">Stops</span><span class="val">9</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">1</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">15</span>
+<div><h4>Donovan Woolen <span class="pos">LB</span></h4>
+<p class="sub">N Dak St &nbsp;·&nbsp; vs Jacksonville State <b class="w">W 33-7</b></p>
+<p class="meta">6&#x27; 4&quot; · 230 lb · Frisco, TX</p></div>
+<div class="gr"><span class="g">74.7</span><span class="gl">PFF</span></div></div>
+<p class="did">4 stops, 7 tackles on 51 snaps</p>
+<div class="chips"><span class="chip">Junior</span><span class="chip fcs">FCS</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">51</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">7</span></div><div class="cell"><span class="lab">Stops</span><span class="val">4</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>74.7</b> · 51 snaps</summary><p class="swing">Best: <b>74.7</b> (Wk 0 vs Jacksonville State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">51</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">7</span></div><div class="cell"><span class="lab">Stops</span><span class="val">4</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">16</span>
+<div><h4>Dylan Lee <span class="pos">LB</span></h4>
+<p class="sub">S Jose St &nbsp;·&nbsp; at USC <b class="l">L 26-42</b></p>
+<p class="meta">6&#x27; 1&quot; · 220 lb · French Camp, CA</p></div>
+<div class="gr"><span class="g">72.0</span><span class="gl">PFF</span></div></div>
+<p class="did">2 pressures, 3 stops, 4 tackles on 77 snaps</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">77</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">4</span></div><div class="cell"><span class="lab">Stops</span><span class="val">3</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">2</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>72.0</b> · 77 snaps</summary><p class="swing">Best: <b>72.0</b> (Wk 0 at USC)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">77</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">4</span></div><div class="cell"><span class="lab">Stops</span><span class="val">3</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">2</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">17</span>
+<div><h4>Fata Puloka <span class="pos">LB</span></h4>
+<p class="sub">Sacramento &nbsp;·&nbsp; at Eastern Michigan <b class="l">L 17-28</b></p>
+<p class="meta">6&#x27; 3&quot; · 224 lb · Sacramento, CA</p></div>
+<div class="gr"><span class="g">69.8</span><span class="gl">PFF</span></div></div>
+<p class="did">2 pressures, 1 sack, 3 stops on 47 snaps</p>
+<div class="chips"><span class="chip">Junior</span><span class="chip fcs">FCS</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">47</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">3</span></div><div class="cell"><span class="lab">Stops</span><span class="val">3</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">1</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">1</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">1</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>69.8</b> · 47 snaps</summary><p class="swing">Best: <b>69.8</b> (Wk 0 at Eastern Michigan)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">47</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">3</span></div><div class="cell"><span class="lab">Stops</span><span class="val">3</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">2</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">1</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">1</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">1</span></div></div></details></article></div><h3 class="grp">Safety<span class="n">3</span></h3><div class="plist"><article class="p">
+<div class="hd"><span class="rk">18</span>
+<div><h4>Kona Moore <span class="pos">S</span></h4>
+<p class="sub">Hawaii &nbsp;·&nbsp; at Stanford <b class="l">L 27-37</b></p>
+<p class="meta">6&#x27; 0&quot; · 190 lb · Kapolei, HI</p></div>
+<div class="gr"><span class="g">73.6</span><span class="gl">PFF</span></div></div>
+<p class="did">6 stops, 15 tackles on 73 snaps</p>
+<div class="chips"><span class="chip">Junior</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">73</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">15</span></div><div class="cell"><span class="lab">Stops</span><span class="val">6</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">2</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>73.6</b> · 73 snaps</summary><p class="swing">Best: <b>73.6</b> (Wk 0 at Stanford)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">73</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">15</span></div><div class="cell"><span class="lab">Stops</span><span class="val">6</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">2</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">19</span>
+<div><h4>Tre Fulton <span class="pos">S</span></h4>
+<p class="sub">Unlv &nbsp;·&nbsp; vs Memphis <b class="l">L 21-27</b></p>
+<p class="meta">6&#x27; 3&quot; · 190 lb · Bakersfield, CA</p></div>
+<div class="gr"><span class="g">66.6</span><span class="gl">PFF</span></div></div>
+<p class="did">1 pressure, 1 sack, 1 stop on 56 snaps</p>
+<div class="chips"><span class="chip">Sophomore</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">56</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">4</span></div><div class="cell"><span class="lab">Stops</span><span class="val">1</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">1</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">1</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">1</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">2</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>66.6</b> · 56 snaps</summary><p class="swing">Best: <b>66.6</b> (Wk 0 vs Memphis)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">56</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">4</span></div><div class="cell"><span class="lab">Stops</span><span class="val">1</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">1</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">1</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">1</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">2</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article><article class="p">
+<div class="hd"><span class="rk">20</span>
+<div><h4>Taylen Eady <span class="pos">S</span></h4>
+<p class="sub">N Dak St &nbsp;·&nbsp; vs Jacksonville State <b class="w">W 33-7</b></p>
+<p class="meta">6&#x27; 0&quot; · 205 lb · Toano, VA</p></div>
+<div class="gr"><span class="g">68.8</span><span class="gl">PFF</span></div></div>
+<p class="did">1 stop, 1 tackle on 30 snaps</p>
+<div class="chips"><span class="chip">Sophomore</span><span class="chip fcs">FCS</span></div>
+<div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">30</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Stops</span><span class="val">1</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div>
+<details class="season"><summary>Season to date &mdash; 1 game · season grade <b>68.8</b> · 30 snaps</summary><p class="swing">Best: <b>68.8</b> (Wk 0 vs Jacksonville State)</p><div class="grid"><div class="cell"><span class="lab">Snaps</span><span class="val">30</span></div><div class="cell"><span class="lab">Tackles</span><span class="val">1</span></div><div class="cell"><span class="lab">Stops</span><span class="val">1</span></div><div class="cell"><span class="lab">Pressures</span><span class="val">0</span></div><div class="cell"><span class="lab">Sacks</span><span class="val">0</span></div><div class="cell"><span class="lab">Hurries</span><span class="val">0</span></div><div class="cell"><span class="lab">TFL</span><span class="val">0</span></div><div class="cell"><span class="lab">INT</span><span class="val">0</span></div><div class="cell"><span class="lab">Pass break-ups</span><span class="val">0</span></div><div class="cell"><span class="lab">Missed tackles</span><span class="val">0</span></div><div class="cell"><span class="lab">Forced fumbles</span><span class="val">0</span></div></div></details></article></div></section>
+<section><h2>Special teams</h2><p class="empty">Nobody cleared the bar this week. The board is left empty rather than padded.</p></section>
+<section id="season"><h2>Season to date &mdash; 1 week</h2>
+<p class="note">Three views, deliberately not collapsed into one answer.</p><p class="note">One week in — structure, not a verdict. These get meaningful around Week 4.</p>
+<div class="cols"><div class="col"><h3>Most appearances</h3><table><tr><td class="rk">1</td><td><b>Quincy Byas</b><span class="school">E Michigan · ED</span></td><td class="num">1</td></tr>
+<tr><td class="rk">2</td><td><b>Trey Hedden</b><span class="school">New Mex St · QB</span></td><td class="num">1</td></tr>
+<tr><td class="rk">3</td><td><b>Carson Conklin</b><span class="school">Sacramento · QB</span></td><td class="num">1</td></tr>
+<tr><td class="rk">4</td><td><b>Carson Clark</b><span class="school">S Jose St · WR</span></td><td class="num">1</td></tr>
+<tr><td class="rk">5</td><td><b>Tae Floyd</b><span class="school">Jville St · ED</span></td><td class="num">1</td></tr>
+<tr><td class="rk">6</td><td><b>Jacari Gatling</b><span class="school">Memphis · ED</span></td><td class="num">1</td></tr>
+<tr><td class="rk">7</td><td><b>Marcus Stokes</b><span class="school">Memphis · QB</span></td><td class="num">1</td></tr>
+<tr><td class="rk">8</td><td><b>Marvell Eggleston</b><span class="school">E Michigan · ED</span></td><td class="num">1</td></tr>
+<tr><td class="rk">9</td><td><b>JQ Brooks</b><span class="school">Jville St · CB</span></td><td class="num">1</td></tr>
+<tr><td class="rk">10</td><td><b>Tama Uiliata</b><span class="school">Hawaii · WR</span></td><td class="num">1</td></tr>
+<tr><td class="rk">11</td><td><b>Brodie Malone-Bradford</b><span class="school">New Mex St · WR</span></td><td class="num">1</td></tr>
+<tr><td class="rk">12</td><td><b>Kainoa Carvalho</b><span class="school">Hawaii · WR</span></td><td class="num">1</td></tr>
+<tr><td class="rk">13</td><td><b>Isaiah Buxton</b><span class="school">S Jose St · CB</span></td><td class="num">1</td></tr>
+<tr><td class="rk">14</td><td><b>Jeremiah Hughes</b><span class="school">Hawaii · CB</span></td><td class="num">1</td></tr>
+<tr><td class="rk">15</td><td><b>Jemyri Davis</b><span class="school">Memphis · WR</span></td><td class="num">1</td></tr></table></div>
+<div class="col"><h3>Rank-weighted points</h3><table><tr><td class="rk">1</td><td><b>Quincy Byas</b><span class="school">E Michigan · ED</span></td><td class="num">94.9</td></tr>
+<tr><td class="rk">2</td><td><b>Trey Hedden</b><span class="school">New Mex St · QB</span></td><td class="num">93.2</td></tr>
+<tr><td class="rk">3</td><td><b>Carson Conklin</b><span class="school">Sacramento · QB</span></td><td class="num">89.8</td></tr>
+<tr><td class="rk">4</td><td><b>Carson Clark</b><span class="school">S Jose St · WR</span></td><td class="num">88.3</td></tr>
+<tr><td class="rk">5</td><td><b>Tae Floyd</b><span class="school">Jville St · ED</span></td><td class="num">87.7</td></tr>
+<tr><td class="rk">6</td><td><b>Jacari Gatling</b><span class="school">Memphis · ED</span></td><td class="num">87.4</td></tr>
+<tr><td class="rk">7</td><td><b>Marcus Stokes</b><span class="school">Memphis · QB</span></td><td class="num">86.2</td></tr>
+<tr><td class="rk">8</td><td><b>Marvell Eggleston</b><span class="school">E Michigan · ED</span></td><td class="num">84.1</td></tr>
+<tr><td class="rk">9</td><td><b>JQ Brooks</b><span class="school">Jville St · CB</span></td><td class="num">82.7</td></tr>
+<tr><td class="rk">10</td><td><b>Tama Uiliata</b><span class="school">Hawaii · WR</span></td><td class="num">81.8</td></tr>
+<tr><td class="rk">11</td><td><b>Brodie Malone-Bradford</b><span class="school">New Mex St · WR</span></td><td class="num">78.3</td></tr>
+<tr><td class="rk">12</td><td><b>Kainoa Carvalho</b><span class="school">Hawaii · WR</span></td><td class="num">74.3</td></tr>
+<tr><td class="rk">13</td><td><b>Isaiah Buxton</b><span class="school">S Jose St · CB</span></td><td class="num">72.7</td></tr>
+<tr><td class="rk">14</td><td><b>Jeremiah Hughes</b><span class="school">Hawaii · CB</span></td><td class="num">72.5</td></tr>
+<tr><td class="rk">15</td><td><b>Jemyri Davis</b><span class="school">Memphis · WR</span></td><td class="num">71.0</td></tr></table></div>
+<div class="col"><h3>Best single week</h3><table><tr><td class="rk">1</td><td><b>Myles Mitchell</b><span class="school">N Dak St · HB</span></td><td class="num">90.6</td></tr>
+<tr><td class="rk">2</td><td><b>Griffin Empey</b><span class="school">N Dak St · G</span></td><td class="num">90.5</td></tr>
+<tr><td class="rk">3</td><td><b>Carson Clark</b><span class="school">S Jose St · WR</span></td><td class="num">89.7</td></tr>
+<tr><td class="rk">4</td><td><b>Tama Uiliata</b><span class="school">Hawaii · WR</span></td><td class="num">88.6</td></tr>
+<tr><td class="rk">5</td><td><b>Brodie Malone-Bradford</b><span class="school">New Mex St · WR</span></td><td class="num">86.1</td></tr>
+<tr><td class="rk">6</td><td><b>Jemyri Davis</b><span class="school">Memphis · WR</span></td><td class="num">86.0</td></tr>
+<tr><td class="rk">7</td><td><b>Guzzy Kayed</b><span class="school">E Michigan · T</span></td><td class="num">85.7</td></tr>
+<tr><td class="rk">8</td><td><b>Gage Schmidt</b><span class="school">N Dak St · C</span></td><td class="num">83.9</td></tr>
+<tr><td class="rk">9</td><td><b>Kainoa Carvalho</b><span class="school">Hawaii · WR</span></td><td class="num">83.1</td></tr>
+<tr><td class="rk">10</td><td><b>Mac Sanders</b><span class="school">Jville St · LB</span></td><td class="num">82.8</td></tr>
+<tr><td class="rk">11</td><td><b>Trey Hedden</b><span class="school">New Mex St · QB</span></td><td class="num">82.7</td></tr>
+<tr><td class="rk">12</td><td><b>Quincy Byas</b><span class="school">E Michigan · ED</span></td><td class="num">82.6</td></tr>
+<tr><td class="rk">13</td><td><b>Zach Ruffin</b><span class="school">Memphis · LB</span></td><td class="num">80.6</td></tr>
+<tr><td class="rk">14</td><td><b>Tae Floyd</b><span class="school">Jville St · ED</span></td><td class="num">79.3</td></tr>
+<tr><td class="rk">15</td><td><b>JQ Brooks</b><span class="school">Jville St · CB</span></td><td class="num">78.4</td></tr></table></div></div></section>
+<footer>
+<p><b>Who is eligible.</b> G5 or FCS, eligibility remaining after this season, a snap
+floor for his position, and not one of Corner Unit's 17 signed clients.</p>
+<p><b>How the board is built.</b> Position groups run in transfer-portal value order.
+Each group has guaranteed slots that mirror a starting lineup; the remaining slots go
+to the premium positions first, and only to a player who graded above his position's
+average that week. Inside a group, the best game is listed first.</p>
+<p><b>Opponent is printed, not adjusted.</b> A big line against a P4 defense and a big
+line against a bad one count the same here &mdash; the opponent and result are shown so
+you judge that yourself.</p>
+<p><b>FCS players</b> appear when their team played an FBS opponent, the only games PFF
+charts at that level and the most predictive transfer-up game there is.</p>
+</footer></div></body></html>

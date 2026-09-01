@@ -1,0 +1,55 @@
+name: deploy-pages
+
+# Publishes ONLY the site files to GitHub Pages.
+#
+# Narrowed deliberately, copying the camp-injury-watch pattern: legacy
+# build-from-branch packaged the whole repo tree into every deployment, which on
+# 2026-08-06 pushed that site into deploy timeouts while its sweeps kept
+# committing — the live page silently froze. Keep this list to files the page
+# actually serves, and never let the PFF exports or the season store near it.
+# Those are licensed data and must not be published.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - '.nojekyll'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; a sweep can land mid-deploy.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stage site files only
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp .nojekyll _site/
+          echo "Staged $(du -sh _site | cut -f1) — files:"
+          ls -la _site
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
